@@ -46,7 +46,7 @@
     <style>
         /* Glassmorphism Styles */
         .glass-panel {
-            background: rgba(14, 15, 18, 0.75);
+            background: rgba(14, 15, 18, 0.88);
             backdrop-filter: blur(24px) saturate(160%);
             -webkit-backdrop-filter: blur(24px) saturate(160%);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -178,15 +178,28 @@
             border-color: #ffffff !important;
         }
 
-        /* Modal Visibility and Overlay Control */
-        .modal-container {
+        /* Direct Modal & Drawer Overlay System */
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
             display: none;
-            opacity: 0;
-            transition: opacity 0.25s ease;
         }
-        .modal-container.active {
+        .drawer-overlay.active {
+            display: block !important;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 110;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay.active {
             display: flex !important;
-            opacity: 1 !important;
         }
     </style>
 </head>
@@ -231,12 +244,12 @@
             <!-- Action Controls -->
             <div class="flex items-center gap-3">
                 <!-- Audio FX Toggle -->
-                <button onclick="toggleAudio()" id="sound-btn" class="glass-button p-2.5 rounded-full text-neutral-300 hover:text-white" title="Efectos de Audio">
+                <button onclick="toggleAudio()" id="sound-btn" class="glass-button p-2.5 rounded-full text-neutral-300 hover:text-white cursor-pointer" title="Efectos de Audio">
                     <i data-lucide="volume-2" class="w-4 h-4"></i>
                 </button>
 
                 <!-- Shopping Bag Button -->
-                <button onclick="openCart()" class="glass-button px-4 py-2 rounded-full flex items-center gap-2 group relative">
+                <button onclick="openCart()" class="glass-button px-4 py-2 rounded-full flex items-center gap-2 group relative cursor-pointer">
                     <i data-lucide="shopping-bag" class="w-4 h-4 text-white group-hover:scale-110 transition-transform"></i>
                     <span class="text-xs font-mono font-semibold text-white tracking-widest hidden sm:inline">BOLSA</span>
                     <span id="cart-badge" class="bg-white text-black text-[10px] font-mono font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
@@ -277,7 +290,7 @@
                             <i data-lucide="arrow-down-right" class="w-4 h-4 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform"></i>
                         </a>
 
-                        <button onclick="openProductModal(1)" class="px-7 py-4 rounded-full font-mono text-xs uppercase tracking-widest border border-white/15 hover:border-white/50 text-neutral-300 hover:text-white transition-all backdrop-blur-md flex items-center gap-2">
+                        <button onclick="openProductModal(1)" class="px-7 py-4 rounded-full font-mono text-xs uppercase tracking-widest border border-white/15 hover:border-white/50 text-neutral-300 hover:text-white transition-all backdrop-blur-md flex items-center gap-2 cursor-pointer">
                             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                             <span>Prenda Destacada</span>
                         </button>
@@ -325,7 +338,7 @@
                                         <h4 class="font-syne font-bold text-sm tracking-wider uppercase text-white">KIMONO ESTRUCTURAL V2</h4>
                                         <span class="text-[10px] font-mono text-neutral-400">$240.00 USD</span>
                                     </div>
-                                    <button onclick="openProductModal(1)" class="glass-button px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider text-white">
+                                    <button onclick="openProductModal(1)" class="glass-button px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider text-white cursor-pointer">
                                         Personalizar
                                     </button>
                                 </div>
@@ -334,9 +347,9 @@
                                 <div class="flex items-center justify-between pt-2 border-t border-white/10">
                                     <span class="text-[10px] font-mono text-neutral-400">Variantes:</span>
                                     <div class="flex items-center gap-2" id="hero-color-swatches">
-                                        <button onclick="swapHeroColor(0)" class="w-6 h-6 rounded-full bg-neutral-900 border border-white/30 swatch-active transition-all" title="Obsidian Black"></button>
-                                        <button onclick="swapHeroColor(1)" class="w-6 h-6 rounded-full bg-neutral-200 border border-neutral-400 opacity-60 hover:opacity-100 hover:scale-110 transition-all" title="Off-White Raw"></button>
-                                        <button onclick="swapHeroColor(2)" class="w-6 h-6 rounded-full bg-stone-700 border border-stone-500 opacity-60 hover:opacity-100 hover:scale-110 transition-all" title="Asphalt Gray"></button>
+                                        <button onclick="swapHeroColor(0)" class="w-6 h-6 rounded-full bg-neutral-900 border border-white/30 swatch-active transition-all cursor-pointer" title="Obsidian Black"></button>
+                                        <button onclick="swapHeroColor(1)" class="w-6 h-6 rounded-full bg-neutral-200 border border-neutral-400 opacity-60 hover:opacity-100 hover:scale-110 transition-all cursor-pointer" title="Off-White Raw"></button>
+                                        <button onclick="swapHeroColor(2)" class="w-6 h-6 rounded-full bg-stone-700 border border-stone-500 opacity-60 hover:opacity-100 hover:scale-110 transition-all cursor-pointer" title="Asphalt Gray"></button>
                                     </div>
                                 </div>
                             </div>
@@ -397,11 +410,11 @@
 
                 <!-- Interactive Category Buttons -->
                 <div class="flex items-center gap-2 overflow-x-auto pb-2 filter-tabs font-mono text-xs">
-                    <button onclick="filterCategory('all')" class="cat-pill active px-5 py-2.5 rounded-full glass-panel border-white/30 text-white font-medium" data-cat="all">TODAS (6)</button>
-                    <button onclick="filterCategory('outerwear')" class="cat-pill px-5 py-2.5 rounded-full glass-panel border-white/5 text-neutral-400 hover:text-white" data-cat="outerwear">ABRIGOS</button>
-                    <button onclick="filterCategory('tops')" class="cat-pill px-5 py-2.5 rounded-full glass-panel border-white/5 text-neutral-400 hover:text-white" data-cat="tops">REMERAS & HOODIES</button>
-                    <button onclick="filterCategory('bottoms')" class="cat-pill px-5 py-2.5 rounded-full glass-panel border-white/5 text-neutral-400 hover:text-white" data-cat="bottoms">PANTALONES</button>
-                    <button onclick="filterCategory('accessories')" class="cat-pill px-5 py-2.5 rounded-full glass-panel border-white/5 text-neutral-400 hover:text-white" data-cat="accessories">ACCESORIOS</button>
+                    <button onclick="filterCategory('all')" class="cat-pill active px-5 py-2.5 rounded-full glass-panel border-white/30 text-white font-medium cursor-pointer" data-cat="all">TODAS (6)</button>
+                    <button onclick="filterCategory('outerwear')" class="cat-pill px-5 py-2.5 rounded-full glass-panel border-white/5 text-neutral-400 hover:text-white cursor-pointer" data-cat="outerwear">ABRIGOS</button>
+                    <button onclick="filterCategory('tops')" class="cat-pill px-5 py-2.5 rounded-full glass-panel border-white/5 text-neutral-400 hover:text-white cursor-pointer" data-cat="tops">REMERAS & HOODIES</button>
+                    <button onclick="filterCategory('bottoms')" class="cat-pill px-5 py-2.5 rounded-full glass-panel border-white/5 text-neutral-400 hover:text-white cursor-pointer" data-cat="bottoms">PANTALONES</button>
+                    <button onclick="filterCategory('accessories')" class="cat-pill px-5 py-2.5 rounded-full glass-panel border-white/5 text-neutral-400 hover:text-white cursor-pointer" data-cat="accessories">ACCESORIOS</button>
                 </div>
             </div>
 
@@ -441,7 +454,7 @@
                                     <span class="text-xs font-mono text-neutral-400 uppercase tracking-widest">LOOKBOOK // PRENDA 04</span>
                                     <h3 class="font-syne text-2xl font-bold uppercase text-white">ABRIGO MONOLITO TÉRMICO</h3>
                                 </div>
-                                <button onclick="openProductModal(4)" class="glass-button px-5 py-2.5 rounded-full text-xs font-mono uppercase tracking-wider flex items-center gap-2">
+                                <button onclick="openProductModal(4)" class="glass-button px-5 py-2.5 rounded-full text-xs font-mono uppercase tracking-wider flex items-center gap-2 cursor-pointer">
                                     <span>Ver Prenda</span>
                                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                                 </button>
@@ -626,7 +639,7 @@
                             placeholder="Ingresa tu correo electrónico..." 
                             class="flex-1 bg-white/5 border border-white/15 focus:border-white rounded-full px-6 py-4 text-sm font-mono text-white placeholder-neutral-500 focus:outline-none transition-all"
                         >
-                        <button type="submit" class="glass-button px-8 py-4 rounded-full font-mono text-xs uppercase tracking-widest whitespace-nowrap">
+                        <button type="submit" class="glass-button px-8 py-4 rounded-full font-mono text-xs uppercase tracking-widest whitespace-nowrap cursor-pointer">
                             Obtener Cupón
                         </button>
                     </form>
@@ -666,7 +679,7 @@
             <div>
                 <h5 class="font-mono text-xs text-neutral-300 uppercase tracking-widest mb-4">ATENCIÓN AL CLIENTE</h5>
                 <ul class="space-y-2 text-xs font-mono text-neutral-500">
-                    <li><button onclick="openSizeGuide()" class="text-neutral-500 hover:text-white transition-colors">Guía de Talles</button></li>
+                    <li><button onclick="openSizeGuide()" class="text-neutral-500 hover:text-white transition-colors cursor-pointer">Guía de Talles</button></li>
                     <li><a href="#" onclick="showToast('Envíos gratis a todo el país'); return false;" class="hover:text-white transition-colors">Políticas de Envío</a></li>
                     <li><a href="#" onclick="showToast('Cambios gratis dentro de 30 días'); return false;" class="hover:text-white transition-colors">Cambios y Devoluciones</a></li>
                     <li><a href="#" onclick="showToast('Contacto: soporte@kromastudio.demo'); return false;" class="hover:text-white transition-colors">WhatsApp Directo</a></li>
@@ -687,10 +700,12 @@
     </footer>
 
     <!-- ================= SLIDE-OVER SHOPPING BAG / CART DRAWER ================= -->
-    <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none transition-all duration-300">
-        <div id="cart-backdrop" onclick="closeCart()" class="absolute inset-0 bg-black/80 backdrop-blur-md opacity-0 transition-opacity duration-300 pointer-events-none cursor-pointer"></div>
+    <div id="cart-drawer" class="drawer-overlay">
+        <!-- Backdrop - Clicking closes -->
+        <div onclick="closeCart()" class="absolute inset-0 bg-black/80 backdrop-blur-md cursor-pointer"></div>
 
-        <div id="cart-content" class="absolute top-0 right-0 h-full w-full max-w-md glass-panel border-l border-white/20 p-6 md:p-8 flex flex-col justify-between translate-x-full transition-transform duration-300 pointer-events-auto">
+        <!-- Slide Panel -->
+        <div id="cart-content" class="absolute top-0 right-0 h-full w-full max-w-md glass-panel border-l border-white/20 p-6 md:p-8 flex flex-col justify-between z-10">
             <div>
                 <div class="flex items-center justify-between pb-6 border-b border-white/10">
                     <div class="flex items-center gap-2">
@@ -698,7 +713,7 @@
                         <h3 class="font-syne text-lg font-bold uppercase text-white tracking-wider">BOLSA DE COMPRAS</h3>
                     </div>
                     <!-- Large Explicit Close Button -->
-                    <button onclick="closeCart()" class="p-2.5 rounded-full bg-white/10 hover:bg-white text-white hover:text-black transition-colors flex items-center justify-center cursor-pointer" title="Cerrar Bolsa">
+                    <button onclick="closeCart()" type="button" class="p-2.5 rounded-full bg-white/10 hover:bg-white text-white hover:text-black transition-colors flex items-center justify-center cursor-pointer shadow-md" title="Cerrar Bolsa">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
@@ -737,11 +752,12 @@
                     </div>
                 </div>
 
-                <button onclick="triggerCheckout()" class="w-full glass-button py-4 rounded-full font-mono text-xs uppercase tracking-widest text-center font-bold flex items-center justify-center gap-2">
+                <button onclick="triggerCheckout()" type="button" class="w-full glass-button py-4 rounded-full font-mono text-xs uppercase tracking-widest text-center font-bold flex items-center justify-center gap-2 cursor-pointer">
                     <span>FINALIZAR COMPRA</span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
-                <button onclick="closeCart()" class="w-full text-center text-xs font-mono text-neutral-400 hover:text-white py-1">
+                
+                <button onclick="closeCart()" type="button" class="w-full text-center text-xs font-mono text-neutral-400 hover:text-white py-2 cursor-pointer underline underline-offset-4">
                     ← Seguir Comprando
                 </button>
             </div>
@@ -749,11 +765,11 @@
     </div>
 
     <!-- ================= PRODUCT MODAL / DETAILED CUSTOMIZER ================= -->
-    <div id="product-modal" class="modal-container fixed inset-0 z-50 items-center justify-center p-4">
+    <div id="product-modal" class="modal-overlay">
         <!-- Backdrop - Clicking closes -->
         <div onclick="closeProductModal()" class="absolute inset-0 bg-black/85 backdrop-blur-xl cursor-pointer"></div>
         
-        <div class="relative w-full max-w-4xl glass-panel rounded-3xl overflow-hidden border border-white/20 p-6 md:p-10 z-10 pointer-events-auto" id="product-modal-card">
+        <div class="relative w-full max-w-4xl glass-panel rounded-3xl overflow-hidden border border-white/20 p-6 md:p-10 z-10" id="product-modal-card">
             
             <!-- EXPLICIT BIG X BUTTON WITH HIGH CONTRAST & Z-INDEX -->
             <button 
@@ -771,11 +787,11 @@
     </div>
 
     <!-- ================= SIZE GUIDE MODAL ================= -->
-    <div id="sizeguide-modal" class="modal-container fixed inset-0 z-[60] items-center justify-center p-4">
+    <div id="sizeguide-modal" class="modal-overlay" style="z-index: 120;">
         <!-- Backdrop - Clicking closes -->
         <div onclick="closeSizeGuide()" class="absolute inset-0 bg-black/85 backdrop-blur-md cursor-pointer"></div>
         
-        <div class="relative w-full max-w-lg glass-panel rounded-3xl p-6 md:p-8 z-10 pointer-events-auto border border-white/20 shadow-2xl">
+        <div class="relative w-full max-w-lg glass-panel rounded-3xl p-6 md:p-8 z-10 border border-white/20 shadow-2xl">
             <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
                 <h3 class="font-syne text-lg font-bold uppercase text-white">GUÍA DE TALLES (EN CM)</h3>
                 <!-- Close X Button -->
@@ -1030,7 +1046,7 @@
             lucide.createIcons();
         }
 
-        // Live Color Change directly on Card (NO FULL RE-RENDER, DIRECT DOM UPDATE)
+        // Live Color Change directly on Card
         function changeProductColor(productId, colorIndex) {
             playAudioFX(520, 0.04);
             const item = products.find(p => p.id === productId);
@@ -1067,7 +1083,7 @@
             showToast(`Color: ${newColor.name}`);
         }
 
-        // Live Size Selection directly on Card (NO FULL RE-RENDER)
+        // Live Size Selection directly on Card
         function changeProductSize(productId, size) {
             playAudioFX(600, 0.03);
             const item = products.find(p => p.id === productId);
@@ -1175,7 +1191,7 @@
                     <div class="py-16 text-center text-neutral-500 font-mono text-xs space-y-3">
                         <i data-lucide="shopping-bag" class="w-8 h-8 mx-auto opacity-30"></i>
                         <p>TU BOLSA ESTÁ VACÍA</p>
-                        <button onclick="closeCart()" class="text-white underline underline-offset-4 mt-2 cursor-pointer">Continuar Explorando</button>
+                        <button onclick="closeCart()" type="button" class="text-white underline underline-offset-4 mt-2 cursor-pointer">Continuar Explorando</button>
                     </div>
                 `;
                 document.getElementById("cart-subtotal").innerText = "$0.00";
@@ -1204,11 +1220,11 @@
                     <!-- Quantity controls -->
                     <div class="flex items-center gap-2">
                         <div class="flex items-center glass-panel rounded-lg border border-white/10">
-                            <button onclick="changeQuantity('${item.cartItemId}', -1)" class="px-2 py-1 text-xs text-neutral-400 hover:text-white cursor-pointer">-</button>
+                            <button onclick="changeQuantity('${item.cartItemId}', -1)" type="button" class="px-2 py-1 text-xs text-neutral-400 hover:text-white cursor-pointer">-</button>
                             <span class="px-1 text-xs font-mono font-bold text-white">${item.quantity}</span>
-                            <button onclick="changeQuantity('${item.cartItemId}', 1)" class="px-2 py-1 text-xs text-neutral-400 hover:text-white cursor-pointer">+</button>
+                            <button onclick="changeQuantity('${item.cartItemId}', 1)" type="button" class="px-2 py-1 text-xs text-neutral-400 hover:text-white cursor-pointer">+</button>
                         </div>
-                        <button onclick="removeCartItem('${item.cartItemId}')" class="p-1.5 text-neutral-500 hover:text-white transition-colors cursor-pointer" title="Eliminar">
+                        <button onclick="removeCartItem('${item.cartItemId}')" type="button" class="p-1.5 text-neutral-500 hover:text-white transition-colors cursor-pointer" title="Eliminar">
                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
@@ -1223,27 +1239,16 @@
 
         // ================= CART DRAWER (OPEN & CLOSE) =================
         function openCart() {
+            playAudioFX(520, 0.03);
             const drawer = document.getElementById("cart-drawer");
-            const backdrop = document.getElementById("cart-backdrop");
-            const content = document.getElementById("cart-content");
-
-            drawer.classList.remove("pointer-events-none");
-            backdrop.classList.remove("pointer-events-none", "opacity-0");
-            backdrop.classList.add("opacity-100");
-            content.classList.remove("translate-x-full");
-            content.classList.add("translate-x-0");
+            drawer.classList.add("active");
+            lucide.createIcons();
         }
 
         function closeCart() {
+            playAudioFX(450, 0.03);
             const drawer = document.getElementById("cart-drawer");
-            const backdrop = document.getElementById("cart-backdrop");
-            const content = document.getElementById("cart-content");
-
-            backdrop.classList.add("opacity-0", "pointer-events-none");
-            content.classList.add("translate-x-full");
-            setTimeout(() => {
-                drawer.classList.add("pointer-events-none");
-            }, 300);
+            drawer.classList.remove("active");
         }
 
         // ================= PRODUCT MODAL / DETAILED CUSTOMIZER =================
