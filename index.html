@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KROMA / STUDIO — Minimalist High-End Apparel</title>
+    
+    <!-- Google Fonts: Syne & Plus Jakarta Sans & Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        syne: ['Syne', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace'],
+                    },
+                    colors: {
+                        dark: {
+                            950: '#050506',
+                            900: '#090a0c',
+                            800: '#111215',
+                            700: '#1a1b20',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- GSAP & Lenis Smooth Scroll -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* Glassmorphism Styles */
+        .glass-panel {
+            background: rgba(14, 15, 18, 0.75);
+            backdrop-filter: blur(24px) saturate(160%);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+        }
+
+        .glass-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.28);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.95), 0 0 30px rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+        }
+
+        .glass-button {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-button:hover {
+            background: #ffffff;
+            color: #050506 !important;
+            border-color: #ffffff;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.45);
+            transform: translateY(-2px);
+        }
+
+        /* Subtle grid & grain */
+        .bg-grid {
+            background-size: 48px 48px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+
+        .noise-bg {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Ambient Glow Orbs */
+        .glow-orb-1 {
+            position: absolute;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(90px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Marquee */
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            width: 200%;
+            animation: marquee 25s linear infinite;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #050506; }
+        ::-webkit-scrollbar-thumb { background: #26272b; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+        /* Custom Interactive Cursor - Pointer Events None strictly */
+        .custom-cursor {
+            pointer-events: none !important;
+            position: fixed;
+            z-index: 99999;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.2s ease, width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+        }
+        .cursor-dot {
+            width: 6px;
+            height: 6px;
+            background: #ffffff;
+            box-shadow: 0 0 8px #ffffff;
+        }
+        .cursor-ring {
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s, height 0.25s, border-color 0.25s;
+        }
+        .cursor-hover .cursor-ring {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: invert(0.2);
+        }
+
+        /* Active selections */
+        .swatch-active {
+            box-shadow: 0 0 0 2px #ffffff, 0 0 15px rgba(255, 255, 255, 0.5);
+            transform: scale(1.15);
+            opacity: 1 !important;
+        }
+        .size-active {
+            background-color: #ffffff !important;
+            color: #050506 !important;
+            font-weight: 700 !important;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            border-color: #ffffff !important;
+        }
+    </style>
+</head>
+<body class="bg-dark-950 text-neutral-100 font-sans antialiased overflow-x-hidden selection:bg-white selection:text-black bg-grid">
+
+    <!-- Noise Texture Overlay -->
+    <div class="noise-bg"></div>
+
+    <!-- Custom Cursor -->
+    <div id="cursor-dot" class="custom-cursor cursor-dot hidden md:block"></div>
+    <div id="cursor-ring" class="custom-cursor cursor-ring hidden md:block"></div>
+
+    <!-- Ambient Glowing Orbs -->
+    <div class="glow-orb-1 top-10 left-10"></div>
+    <div class="glow-orb-1 top-[1300px] right-10"></div>
+    <div class="glow-orb-1 top-[2600px] left-1/4"></div>
+
+    <!-- ================= FLOATING GLASS HEADER ================= -->
+    <header class="fixed top-5 left-0 right-0 z-40 px-4 md:px-8 max-w-7xl mx-auto">
+        <nav class="glass-panel px-6 py-4 rounded-full flex items-center justify-between border border-white/10" id="navbar">
+            
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center relative overflow-hidden group-hover:border-white transition-colors duration-500">
+                    <span class="block w-2 h-2 bg-white rounded-full group-hover:scale-150 transition-transform duration-500"></span>
+                    <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-syne text-lg tracking-[0.28em] font-black uppercase text-white leading-none">KROMA</span>
+                    <span class="text-[9px] font-mono tracking-widest text-neutral-500 uppercase mt-0.5">STUDIO MONOCHROME</span>
+                </div>
+            </a>
+
+            <!-- Nav Links -->
+            <div class="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest font-mono text-neutral-400">
+                <a href="#collections" class="hover:text-white transition-colors py-1 relative">01 // Colección</a>
+                <a href="#lookbook" class="hover:text-white transition-colors py-1 relative">02 // Lookbook</a>
+                <a href="#features" class="hover:text-white transition-colors py-1 relative">03 // Garantía</a>
+                <a href="#reviews" class="hover:text-white transition-colors py-1 relative">04 // Opiniones</a>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex items-center gap-3">
+                <!-- Audio FX Toggle -->
+                <button onclick="toggleAudio()" id="sound-btn" class="glass-button p-2.5 rounded-full text-neutral-300 hover:text-white" title="Efectos de Audio">
+                    <i data-lucide="volume-2" class="w-4 h-4"></i>
+                </button>
+
+                <!-- Shopping Bag Button -->
+                <button onclick="openCart()" class="glass-button px-4 py-2 rounded-full flex items-center gap-2 group relative">
+                    <i data-lucide="shopping-bag" class="w-4 h-4 text-white group-hover:scale-110 transition-transform"></i>
+                    <span class="text-xs font-mono font-semibold text-white tracking-widest hidden sm:inline">BOLSA</span>
+                    <span id="cart-badge" class="bg-white text-black text-[10px] font-mono font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="relative z-10">
+
+        <!-- ================= HERO SECTION ================= -->
+        <section class="min-h-screen pt-36 pb-20 px-6 sm:px-10 lg:px-16 flex flex-col justify-between max-w-7xl mx-auto relative">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center my-auto">
+                
+                <!-- Left Hero Information -->
+                <div class="lg:col-span-7 space-y-8" id="hero-text-block">
+                    
+                    <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full glass-panel border border-white/10 text-xs font-mono tracking-wider text-neutral-300">
+                        <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                        FW/2026 // NUEVA COLECCIÓN DISPONIBLE
+                    </div>
+
+                    <h1 class="font-syne text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight leading-[0.92] uppercase text-white">
+                        ROPA DE AUTOR. <br>
+                        <span class="text-neutral-500 font-normal italic">ESCULTURA</span><br>
+                        &amp; CALCE PURO.
+                    </h1>
+
+                    <p class="text-neutral-400 text-base sm:text-lg max-w-xl font-light leading-relaxed">
+                        Prendas diseñadas en escala monocromática y tonos neutros. Selecciona tu color, tu talle y agrégalo directamente a tu bolsa con feedback instantáneo.
+                    </p>
+
+                    <!-- Interactive CTAs -->
+                    <div class="flex flex-wrap items-center gap-4 pt-2">
+                        <a href="#collections" class="glass-button px-8 py-4 rounded-full font-mono text-xs uppercase tracking-widest flex items-center gap-3 group">
+                            <span>Explorar Catálogo</span>
+                            <i data-lucide="arrow-down-right" class="w-4 h-4 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform"></i>
+                        </a>
+
+                        <button onclick="openProductModal(1)" class="px-7 py-4 rounded-full font-mono text-xs uppercase tracking-widest border border-white/15 hover:border-white/50 text-neutral-300 hover:text-white transition-all backdrop-blur-md flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                            <span>Prenda Destacada</span>
+                        </button>
+                    </div>
+
+                    <!-- Trust Metrics for Clients -->
+                    <div class="pt-8 border-t border-white/10 grid grid-cols-3 gap-6 max-w-lg font-mono text-xs">
+                        <div>
+                            <span class="block text-2xl font-syne font-black text-white">100%</span>
+                            <span class="text-neutral-500 uppercase text-[10px] tracking-wider">Algodón Pesado 480g</span>
+                        </div>
+                        <div>
+                            <span class="block text-2xl font-syne font-black text-white">48hs</span>
+                            <span class="text-neutral-500 uppercase text-[10px] tracking-wider">Envío Express Gratis</span>
+                        </div>
+                        <div>
+                            <span class="block text-2xl font-syne font-black text-white">30 Días</span>
+                            <span class="text-neutral-500 uppercase text-[10px] tracking-wider">Cambio sin Costo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Hero Interactive Showcase with live color swap -->
+                <div class="lg:col-span-5 relative" id="hero-interactive-card">
+                    <div class="relative rounded-3xl overflow-hidden glass-card p-4 border border-white/20 group">
+                        
+                        <div class="aspect-[4/5] rounded-2xl overflow-hidden relative bg-neutral-950">
+                            <img 
+                                id="hero-img-display"
+                                src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1200" 
+                                alt="Kimono Estructural" 
+                                class="w-full h-full object-cover transition-all duration-300 filter contrast-110"
+                            >
+
+                            <!-- Color selection badge on top of image -->
+                            <div class="absolute top-4 left-4 glass-panel px-3 py-1.5 rounded-full flex items-center gap-2">
+                                <span class="text-[10px] font-mono text-neutral-300 uppercase">COLOR:</span>
+                                <span id="hero-color-name" class="text-[10px] font-mono text-white font-bold uppercase">Obsidian Black</span>
+                            </div>
+
+                            <!-- Bottom Glass Card Bar -->
+                            <div class="absolute bottom-4 left-4 right-4 glass-panel p-4 rounded-2xl space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-syne font-bold text-sm tracking-wider uppercase text-white">KIMONO ESTRUCTURAL V2</h4>
+                                        <span class="text-[10px] font-mono text-neutral-400">$240.00 USD</span>
+                                    </div>
+                                    <button onclick="openProductModal(1)" class="glass-button px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider text-white">
+                                        Personalizar
+                                    </button>
+                                </div>
+
+                                <!-- Color Dots preview for Hero -->
+                                <div class="flex items-center justify-between pt-2 border-t border-white/10">
+                                    <span class="text-[10px] font-mono text-neutral-400">Variantes:</span>
+                                    <div class="flex items-center gap-2" id="hero-color-swatches">
+                                        <button onclick="swapHeroColor(0)" class="w-6 h-6 rounded-full bg-neutral-900 border-2 border-white swatch-active transition-all" title="Obsidian Black"></button>
+                                        <button onclick="swapHeroColor(1)" class="w-6 h-6 rounded-full bg-neutral-200 border border-neutral-400 opacity-60 hover:opacity-100 hover:scale-110 transition-all" title="Off-White Raw"></button>
+                                        <button onclick="swapHeroColor(2)" class="w-6 h-6 rounded-full bg-stone-700 border border-stone-500 opacity-60 hover:opacity-100 hover:scale-110 transition-all" title="Asphalt Gray"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Indicator -->
+            <div class="flex items-center justify-between text-xs font-mono text-neutral-500 pt-10 border-t border-white/5">
+                <span class="tracking-widest uppercase">Buenos Aires // Colección FW26</span>
+                <a href="#collections" class="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors animate-bounce">
+                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    <span class="uppercase tracking-widest text-[10px]">SCROLL PARA COMPRAR</span>
+                </a>
+                <span class="tracking-widest">DEMO E-COMMERCE</span>
+            </div>
+        </section>
+
+        <!-- ================= MARQUEE TICKER ================= -->
+        <section class="py-5 border-y border-white/10 bg-neutral-950/80 backdrop-blur-xl overflow-hidden relative">
+            <div class="animate-marquee flex items-center gap-12 font-syne font-black text-2xl sm:text-3xl uppercase tracking-[0.25em] text-neutral-400 select-none">
+                <span>TALLES REALES S AL XXL</span>
+                <span class="text-white">✦</span>
+                <span>ENVÍOS A TODO EL PAÍS</span>
+                <span class="text-white">✦</span>
+                <span>TEJIDO 480 GSM ALGODÓN ORGÁNICO</span>
+                <span class="text-white">✦</span>
+                <span>3 CUOTAS SIN INTERÉS</span>
+                <span class="text-white">✦</span>
+                <span>DISEÑO MONOCROMÁTICO & MINIMAL</span>
+                <span class="text-white">✦</span>
+                <!-- Loop repeat -->
+                <span>TALLES REALES S AL XXL</span>
+                <span class="text-white">✦</span>
+                <span>ENVÍOS A TODO EL PAÍS</span>
+                <span class="text-white">✦</span>
+                <span>TEJIDO 480 GSM ALGODÓN ORGÁNICO</span>
+                <span class="text-white">✦</span>
+                <span>3 CUOTAS SIN INTERÉS</span>
+                <span class="text-white">✦</span>
+                <span>DISEÑO MONOCROMÁTICO & MINIMAL</span>
+                <span class="text-white">✦</span>
+            </div>
+        </section>
+
+        <!-- ================= PRODUCT CATALOGUE ================= -->
+        <section id="collections" class="py-28 px-6 sm:px-10 lg:px-16 max-w-7xl mx-auto">
+            
+            <!-- Filter & Search Controls Header -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                <div>
+                    <span class="text-xs font-mono tracking-widest text-neutral-500 uppercase block mb-2">[ CATÁLOGO ACTIVO // TIENDA ONLINE ]</span>
+                    <h2 class="font-syne text-4xl sm:text-6xl font-black uppercase tracking-tight text-white">COLECCIÓN FW/26</h2>
+                </div>
+
+                <!-- Interactive Category Buttons -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 filter-tabs font-mono text-xs">
+                    <button onclick="filterCategory('all')" class="cat-pill active px-5 py-2.5 rounded-full glass-panel border-white/30 text-white font-medium" data-cat="all">TODAS (6)</button>
+                    <button onclick="filterCategory('outerwear')" class="cat-pill px-5 py-2.5 rounded-full glass-panel border-white/5 text-neutral-400 hover:text-white" data-cat="outerwear">ABRIGOS</button>
+                    <button onclick="filterCategory('tops')" class="cat-pill px-5 py-2.5 rounded-full glass-panel border-white/5 text-neutral-400 hover:text-white" data-cat="tops">REMERAS & HOODIES</button>
+                    <button onclick="filterCategory('bottoms')" class="cat-pill px-5 py-2.5 rounded-full glass-panel border-white/5 text-neutral-400 hover:text-white" data-cat="bottoms">PANTALONES</button>
+                    <button onclick="filterCategory('accessories')" class="cat-pill px-5 py-2.5 rounded-full glass-panel border-white/5 text-neutral-400 hover:text-white" data-cat="accessories">ACCESORIOS</button>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Dynamically populated with working sizes and color swatches -->
+            </div>
+        </section>
+
+        <!-- ================= EDITORIAL LOOKBOOK SECTION ================= -->
+        <section id="lookbook" class="py-28 border-t border-white/10 bg-dark-900/60 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+                
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                    <div>
+                        <span class="text-xs font-mono tracking-widest text-neutral-500 uppercase block mb-2">[ 02 — EDITORIAL VISUAL ]</span>
+                        <h2 class="font-syne text-4xl sm:text-5xl font-black uppercase text-white">LOOKBOOK & SILUETAS</h2>
+                    </div>
+                    <p class="text-neutral-400 text-sm max-w-sm font-light">
+                        Prendas pensadas para combinarse entre sí sin esfuerzo. Líneas limpias, cortes oversized y acabados mate.
+                    </p>
+                </div>
+
+                <!-- Editorial Interactive Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                    
+                    <div class="md:col-span-7 glass-card p-4 rounded-3xl group">
+                        <div class="aspect-[16/11] rounded-2xl overflow-hidden relative">
+                            <img 
+                                src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=1400" 
+                                alt="Abrigo Monolito Térmico" 
+                                class="w-full h-full object-cover filter grayscale contrast-125 group-hover:scale-105 transition-transform duration-1000"
+                            >
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                            <div class="absolute bottom-6 left-6 right-6 flex items-end justify-between">
+                                <div>
+                                    <span class="text-xs font-mono text-neutral-400 uppercase tracking-widest">LOOKBOOK // PRENDA 04</span>
+                                    <h3 class="font-syne text-2xl font-bold uppercase text-white">ABRIGO MONOLITO TÉRMICO</h3>
+                                </div>
+                                <!-- BUTTON LEADS DIRECTLY TO PRODUCT ID 4 -->
+                                <button onclick="openProductModal(4)" class="glass-button px-5 py-2.5 rounded-full text-xs font-mono uppercase tracking-wider flex items-center gap-2">
+                                    <span>Ver Prenda</span>
+                                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-5 space-y-6">
+                        
+                        <div class="glass-card p-8 rounded-3xl space-y-3">
+                            <div class="flex items-center gap-3 text-white">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                                <h3 class="font-syne text-xl font-bold uppercase">Garantía de Calce Exacto</h3>
+                            </div>
+                            <p class="text-neutral-400 text-sm font-light leading-relaxed">
+                                Si el talle o la caída de la prenda no te convence al recibirla en tu casa, gestionamos el cambio de forma 100% gratuita en 24 horas hábiles.
+                            </p>
+                        </div>
+
+                        <div class="glass-card p-8 rounded-3xl space-y-3">
+                            <div class="flex items-center gap-3 text-white">
+                                <i data-lucide="truck" class="w-5 h-5"></i>
+                                <h3 class="font-syne text-xl font-bold uppercase">Logística & Envíos Rápidos</h3>
+                            </div>
+                            <p class="text-neutral-400 text-sm font-light leading-relaxed">
+                                Despachamos en packaging rígido de colección con código de seguimiento en tiempo real vía WhatsApp y correo electrónico.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= VALUE PROPOSITION ================= -->
+        <section id="features" class="py-24 px-6 sm:px-10 lg:px-16 max-w-7xl mx-auto border-t border-white/10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                
+                <div class="glass-card p-6 rounded-3xl space-y-3">
+                    <div class="w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-white mb-4">
+                        <i data-lucide="credit-card" class="w-5 h-5"></i>
+                    </div>
+                    <h4 class="font-syne font-bold text-base uppercase text-white">Hasta 3 Cuotas Sin Interés</h4>
+                    <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                        Aceptamos todas las tarjetas de crédito y transferencias bancarias con 10% de descuento automático.
+                    </p>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl space-y-3">
+                    <div class="w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-white mb-4">
+                        <i data-lucide="package-check" class="w-5 h-5"></i>
+                    </div>
+                    <h4 class="font-syne font-bold text-base uppercase text-white">Packaging de Colección</h4>
+                    <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                        Cada pedido incluye caja mate rígida, papel seda negro y sticker holográfico seriado de autenticidad.
+                    </p>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl space-y-3">
+                    <div class="w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-white mb-4">
+                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    </div>
+                    <h4 class="font-syne font-bold text-base uppercase text-white">Cambios Ágiles Sin Cargo</h4>
+                    <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                        ¿No te quedó como esperabas? Solicita tu cambio desde el sitio y retiramos por tu domicilio.
+                    </p>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl space-y-3">
+                    <div class="w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-white mb-4">
+                        <i data-lucide="award" class="w-5 h-5"></i>
+                    </div>
+                    <h4 class="font-syne font-bold text-base uppercase text-white">Confección Prémium 480g</h4>
+                    <p class="text-xs text-neutral-400 font-light leading-relaxed">
+                        Algodón peinado de alto gramaje que no se encoge, no se deforma y mantiene el tono lavado tras lavado.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= REVIEWS / SOCIAL PROOF ================= -->
+        <section id="reviews" class="py-24 px-6 sm:px-10 lg:px-16 max-w-7xl mx-auto border-t border-white/10">
+            <div class="text-center max-w-xl mx-auto mb-16">
+                <span class="text-xs font-mono tracking-widest text-neutral-500 uppercase block mb-2">[ 04 — CLIENTES & EXPERIENCIAS ]</span>
+                <h2 class="font-syne text-3xl sm:text-4xl font-black uppercase text-white">OPINIONES VERIFICADAS</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Review 1 -->
+                <div class="glass-card p-8 rounded-3xl flex flex-col justify-between space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex text-white gap-1">
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                        </div>
+                        <p class="text-neutral-300 text-sm font-light italic leading-relaxed">
+                            "Compré el Kimono en color negro y la calidad del algodón es una locura. El talle L me quedó perfecto y el envío llegó en 24 horas."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4 pt-4 border-t border-white/10">
+                        <div class="w-10 h-10 rounded-full bg-neutral-800 border border-white/20 flex items-center justify-center font-syne font-bold text-xs text-white">
+                            MR
+                        </div>
+                        <div>
+                            <h4 class="font-syne text-sm font-bold text-white uppercase">MATEO R.</h4>
+                            <span class="text-[10px] font-mono text-neutral-500 uppercase">Comprador Verificado — Palermo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="glass-card p-8 rounded-3xl flex flex-col justify-between space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex text-white gap-1">
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                        </div>
+                        <p class="text-neutral-300 text-sm font-light italic leading-relaxed">
+                            "Tenía dudas con el talle del pantalón cargo pero la guía interactiva funcionó impecable. La tela es gruesa y tiene excelente caída."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4 pt-4 border-t border-white/10">
+                        <div class="w-10 h-10 rounded-full bg-neutral-800 border border-white/20 flex items-center justify-center font-syne font-bold text-xs text-white">
+                            VL
+                        </div>
+                        <div>
+                            <h4 class="font-syne text-sm font-bold text-white uppercase">VALENTINA L.</h4>
+                            <span class="text-[10px] font-mono text-neutral-500 uppercase">Compradora Verificada — Belgrano</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="glass-card p-8 rounded-3xl flex flex-col justify-between space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex text-white gap-1">
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-white"></i>
+                        </div>
+                        <p class="text-neutral-300 text-sm font-light italic leading-relaxed">
+                            "El Hoodie oversized en gris asfalto superó mis expectativas. Ya lo lavé tres veces y no perdió nada de color ni forma. Recomendadísimo."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4 pt-4 border-t border-white/10">
+                        <div class="w-10 h-10 rounded-full bg-neutral-800 border border-white/20 flex items-center justify-center font-syne font-bold text-xs text-white">
+                            SZ
+                        </div>
+                        <div>
+                            <h4 class="font-syne text-sm font-bold text-white uppercase">SANTIAGO Z.</h4>
+                            <span class="text-[10px] font-mono text-neutral-500 uppercase">Comprador Verificado — Córdoba</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= NEWSLETTER ================= -->
+        <section class="py-24 px-6 sm:px-10 lg:px-16 max-w-5xl mx-auto">
+            <div class="glass-card p-10 md:p-16 rounded-3xl text-center border border-white/20 relative overflow-hidden">
+                <div class="max-w-xl mx-auto space-y-6">
+                    <span class="text-xs font-mono uppercase tracking-widest text-neutral-400 block">[ BENEFICIO EXCLUSIVO ]</span>
+                    <h2 class="font-syne text-3xl sm:text-5xl font-black uppercase text-white">15% OFF EN TU PRIMERA COMPRA</h2>
+                    <p class="text-neutral-400 text-sm font-light">
+                        Suscríbete a nuestro club privado para recibir tu cupón de bienvenida y enterarte de los nuevos lanzamientos antes que nadie.
+                    </p>
+
+                    <form onsubmit="handleNewsletter(event)" class="flex flex-col sm:flex-row gap-3 pt-4">
+                        <input 
+                            type="email" 
+                            required 
+                            placeholder="Ingresa tu correo electrónico..." 
+                            class="flex-1 bg-white/5 border border-white/15 focus:border-white rounded-full px-6 py-4 text-sm font-mono text-white placeholder-neutral-500 focus:outline-none transition-all"
+                        >
+                        <button type="submit" class="glass-button px-8 py-4 rounded-full font-mono text-xs uppercase tracking-widest whitespace-nowrap">
+                            Obtener Cupón
+                        </button>
+                    </form>
+                    <span id="newsletter-msg" class="block text-xs font-mono text-emerald-400 opacity-0 transition-opacity">✓ CUPÓN "KROMA15" ENVIADO A TU CASILLA DE CORREO.</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="border-t border-white/10 py-16 px-6 sm:px-10 lg:px-16 bg-dark-950/90 backdrop-blur-2xl relative z-10">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-7 h-7 rounded-full border border-white/30 flex items-center justify-center">
+                        <span class="block w-2 h-2 bg-white rounded-full"></span>
+                    </div>
+                    <span class="font-syne text-lg tracking-[0.25em] font-extrabold uppercase text-white">KROMA</span>
+                </div>
+                <p class="text-xs font-mono text-neutral-500 leading-relaxed">
+                    Indumentaria contemporánea de alto impacto estético. Tienda online minimalista en escala monocromática.
+                </p>
+                <span class="text-[10px] font-mono text-neutral-600 block">© 2026 KROMA STUDIO. DEMO COMERCIAL DE VENTA.</span>
+            </div>
+
+            <div>
+                <h5 class="font-mono text-xs text-neutral-300 uppercase tracking-widest mb-4">CATEGORÍAS</h5>
+                <ul class="space-y-2 text-xs font-mono text-neutral-500">
+                    <li><a href="#collections" class="hover:text-white transition-colors">Abrigos & Kimonos</a></li>
+                    <li><a href="#collections" class="hover:text-white transition-colors">Hoodies & Remeras</a></li>
+                    <li><a href="#collections" class="hover:text-white transition-colors">Pantalones Cargo</a></li>
+                    <li><a href="#collections" class="hover:text-white transition-colors">Bolsos & Accesorios</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h5 class="font-mono text-xs text-neutral-300 uppercase tracking-widest mb-4">ATENCIÓN AL CLIENTE</h5>
+                <ul class="space-y-2 text-xs font-mono text-neutral-500">
+                    <li><a href="#" onclick="openSizeGuide(); return false;" class="hover:text-white transition-colors">Guía de Talles</a></li>
+                    <li><a href="#" onclick="showToast('Envíos gratis a todo el país'); return false;" class="hover:text-white transition-colors">Políticas de Envío</a></li>
+                    <li><a href="#" onclick="showToast('Cambios gratis dentro de 30 días'); return false;" class="hover:text-white transition-colors">Cambios y Devoluciones</a></li>
+                    <li><a href="#" onclick="showToast('Contacto: soporte@kromastudio.demo'); return false;" class="hover:text-white transition-colors">WhatsApp Directo</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h5 class="font-mono text-xs text-neutral-300 uppercase tracking-widest mb-4">DEMO LISTA PARA VENDER</h5>
+                <p class="text-xs font-mono text-neutral-400 mb-3">
+                    Plantilla de alta gama para comercializar con marcas de indumentaria, showrooms y diseñadores independientes.
+                </p>
+                <div class="glass-panel p-3 rounded-xl border border-white/10 text-[11px] font-mono text-neutral-400 flex items-center justify-between">
+                    <span>ESTADO: 100% OPERATIVO</span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= SLIDE-OVER SHOPPING BAG / CART DRAWER ================= -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none transition-all duration-500">
+        <div id="cart-backdrop" onclick="closeCart()" class="absolute inset-0 bg-black/80 backdrop-blur-md opacity-0 transition-opacity duration-500 pointer-events-none"></div>
+
+        <div id="cart-content" class="absolute top-0 right-0 h-full w-full max-w-md glass-panel border-l border-white/20 p-6 md:p-8 flex flex-col justify-between translate-x-full transition-transform duration-500 pointer-events-auto">
+            <div>
+                <div class="flex items-center justify-between pb-6 border-b border-white/10">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="shopping-bag" class="w-5 h-5 text-white"></i>
+                        <h3 class="font-syne text-lg font-bold uppercase text-white tracking-wider">BOLSA DE COMPRAS</h3>
+                    </div>
+                    <button onclick="closeCart()" class="p-2 rounded-full hover:bg-white/10 text-neutral-400 hover:text-white transition-colors">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Free Shipping Progress Bar -->
+                <div class="pt-4 pb-2 border-b border-white/10 space-y-2">
+                    <div class="flex justify-between text-xs font-mono">
+                        <span class="text-neutral-400">ENVÍO GRATIS:</span>
+                        <span id="shipping-progress-text" class="text-white font-bold">¡ALCANZADO!</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+                        <div id="shipping-progress-bar" class="h-full bg-white transition-all duration-500" style="width: 100%;"></div>
+                    </div>
+                </div>
+
+                <!-- Cart Items Container -->
+                <div id="cart-items" class="py-6 space-y-4 max-h-[50vh] overflow-y-auto pr-2">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Cart Footer -->
+            <div class="border-t border-white/10 pt-6 space-y-4">
+                <div class="space-y-2 font-mono text-xs">
+                    <div class="flex justify-between text-neutral-400">
+                        <span>SUBTOTAL</span>
+                        <span id="cart-subtotal" class="text-white font-bold">$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-neutral-400">
+                        <span>COSTO DE ENVÍO</span>
+                        <span class="text-emerald-400 font-bold">GRATIS</span>
+                    </div>
+                    <div class="flex justify-between text-base font-syne font-bold text-white pt-2 border-t border-white/10">
+                        <span>TOTAL</span>
+                        <span id="cart-total">$0.00</span>
+                    </div>
+                </div>
+
+                <button onclick="triggerCheckout()" class="w-full glass-button py-4 rounded-full font-mono text-xs uppercase tracking-widest text-center font-bold flex items-center justify-center gap-2">
+                    <span>FINALIZAR COMPRA</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+                <p class="text-[10px] font-mono text-neutral-500 text-center uppercase tracking-wider">
+                    PAGO 100% SEGURO // HASTA 3 CUOTAS SIN INTERÉS
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PRODUCT MODAL / DETAILED CUSTOMIZER ================= -->
+    <div id="product-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none opacity-0 transition-opacity duration-300">
+        <div onclick="closeProductModal()" class="absolute inset-0 bg-black/85 backdrop-blur-xl"></div>
+        
+        <div class="relative w-full max-w-4xl glass-panel rounded-3xl overflow-hidden border border-white/20 p-6 md:p-10 z-10 scale-95 transition-transform duration-300 pointer-events-auto" id="product-modal-card">
+            
+            <button onclick="closeProductModal()" class="absolute top-6 right-6 p-2 rounded-full glass-button text-neutral-400 hover:text-white z-20">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div id="modal-content-body" class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+                <!-- Populated dynamically with reactive size & color picker -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= SIZE GUIDE MODAL ================= -->
+    <div id="sizeguide-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none opacity-0 transition-opacity duration-300">
+        <div onclick="closeSizeGuide()" class="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
+        <div class="relative w-full max-w-lg glass-panel rounded-3xl p-6 md:p-8 z-10 scale-95 transition-transform duration-300 pointer-events-auto border border-white/20">
+            <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+                <h3 class="font-syne text-lg font-bold uppercase text-white">GUÍA DE TALLES (EN CM)</h3>
+                <button onclick="closeSizeGuide()" class="p-2 rounded-full hover:bg-white/10 text-neutral-400 hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <table class="w-full text-left font-mono text-xs text-neutral-300">
+                <thead>
+                    <tr class="border-b border-white/10 text-neutral-500 uppercase">
+                        <th class="py-2">Talle</th>
+                        <th class="py-2">Pecho</th>
+                        <th class="py-2">Largo</th>
+                        <th class="py-2">Manga</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    <tr><td class="py-2.5 font-bold text-white">S</td><td>104 cm</td><td>71 cm</td><td>62 cm</td></tr>
+                    <tr><td class="py-2.5 font-bold text-white">M</td><td>110 cm</td><td>73 cm</td><td>64 cm</td></tr>
+                    <tr><td class="py-2.5 font-bold text-white">L</td><td>116 cm</td><td>75 cm</td><td>66 cm</td></tr>
+                    <tr><td class="py-2.5 font-bold text-white">XL</td><td>122 cm</td><td>77 cm</td><td>68 cm</td></tr>
+                    <tr><td class="py-2.5 font-bold text-white">XXL</td><td>128 cm</td><td>79 cm</td><td>70 cm</td></tr>
+                </tbody>
+            </table>
+            <p class="text-[11px] font-mono text-neutral-500 mt-4 leading-relaxed">
+                * Medidas tomadas sobre prenda plana en superficie horizontal. Corte diseñado para calce relajado/oversized.
+            </p>
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeSizeGuide()" class="glass-button px-6 py-2.5 rounded-full text-xs font-mono uppercase tracking-wider text-white">
+                    Entendido / Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= TOAST NOTIFICATION ================= -->
+    <div id="toast" class="fixed bottom-8 right-8 z-50 glass-panel px-6 py-4 rounded-2xl border border-white/20 shadow-2xl flex items-center gap-3 translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+        <span id="toast-text" class="font-mono text-xs uppercase tracking-wider text-white">Prenda agregada a la bolsa</span>
+    </div>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        lucide.createIcons();
+
+        // 1. PRODUCTS DATABASE (PRENDA 4 IS ABRIGO MONOLITO TÉRMICO)
+        const products = [
+            {
+                id: 1,
+                name: "KIMONO ESTRUCTURAL V2",
+                category: "outerwear",
+                price: 240,
+                tag: "DESTACADO",
+                desc: "Prenda de corte kimono en algodón pesado de 450g. Solapas cruzadas sin botones, mangas anchas y caída escultural que combina con cualquier outfit.",
+                sizes: ["S", "M", "L", "XL"],
+                colors: [
+                    { name: "Obsidian Black", hex: "#0e0f12", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=900" },
+                    { name: "Off-White Raw", hex: "#f0ede6", image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&q=80&w=900" },
+                    { name: "Asphalt Gray", hex: "#4a4c52", image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=900" }
+                ],
+                selectedColorIndex: 0,
+                selectedSize: "M"
+            },
+            {
+                id: 2,
+                name: "HOODIE MONOLITO OVERSIZED",
+                category: "tops",
+                price: 180,
+                tag: "MÁS VENDIDO",
+                desc: "Sudadera pesada con capucha envolvente de doble tela sin cordones. Interior frizado suave al tacto y puños ajustados que no se aflojan.",
+                sizes: ["S", "M", "L", "XL", "XXL"],
+                colors: [
+                    { name: "Pitch Black", hex: "#0b0b0c", image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&q=80&w=900" },
+                    { name: "Bone White", hex: "#e5e2da", image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=900" },
+                    { name: "Mineral Slate", hex: "#5d6268", image: "https://images.unsplash.com/photo-1550614000-4895a10e1bfd?auto=format&fit=crop&q=80&w=900" }
+                ],
+                selectedColorIndex: 0,
+                selectedSize: "L"
+            },
+            {
+                id: 3,
+                name: "PANTALÓN PLEATED CARGO",
+                category: "bottoms",
+                price: 210,
+                tag: "SASTRERÍA",
+                desc: "Fusión de sastrería y estilo urbano contemporáneo. Tablas frontales profundas, tiro medio y bolsillos utilitarios con costura oculta.",
+                sizes: ["S", "M", "L", "XL"],
+                colors: [
+                    { name: "Black Shadow", hex: "#121316", image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&q=80&w=900" },
+                    { name: "Stone Khaki", hex: "#c2baa8", image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=900" },
+                    { name: "Steel Gray", hex: "#3b3d42", image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=900" }
+                ],
+                selectedColorIndex: 0,
+                selectedSize: "M"
+            },
+            {
+                id: 4,
+                name: "ABRIGO MONOLITO TÉRMICO",
+                category: "outerwear",
+                price: 380,
+                tag: "EDICIÓN LOOKBOOK",
+                desc: "Abrigo largo de corte arquitectónico confeccionado en paño de lana térmica peinada. Cuello envolvente con cierre cruzado invisible y forro de cupro.",
+                sizes: ["S", "M", "L", "XL"],
+                colors: [
+                    { name: "Obsidian Black", hex: "#111215", image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=900" },
+                    { name: "Pebble Cream", hex: "#dcd6cd", image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&q=80&w=900" },
+                    { name: "Slate Heather", hex: "#4a4c52", image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=900" }
+                ],
+                selectedColorIndex: 0,
+                selectedSize: "L"
+            },
+            {
+                id: 5,
+                name: "REMERÓN BOX FIT 320G",
+                category: "tops",
+                price: 95,
+                tag: "BÁSICO ESENCIAL",
+                desc: "Remera cuello redondo cerrado con ribete grueso de 3 cm. Confeccionada en algodón 100% que cae pesada sobre los hombros.",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+                colors: [
+                    { name: "True Black", hex: "#0a0a0c", image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=900" },
+                    { name: "Optic White", hex: "#fafafa", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=900" },
+                    { name: "Smoky Gray", hex: "#63676e", image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&q=80&w=900" }
+                ],
+                selectedColorIndex: 0,
+                selectedSize: "L"
+            },
+            {
+                id: 6,
+                name: "CROSSBODY TITANIO TÁCTICO",
+                category: "accessories",
+                price: 140,
+                tag: "HARDWARE",
+                desc: "Bolso cruzado en Cordura® mate resistente al agua. Hebilla magnética Fidlock® de liberación rápida y compartimentos acolchados.",
+                sizes: ["ÚNICO"],
+                colors: [
+                    { name: "Stealth Black", hex: "#0f1012", image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=900" },
+                    { name: "Arctic Silver", hex: "#8a8d94", image: "https://images.unsplash.com/photo-1550614000-4895a10e1bfd?auto=format&fit=crop&q=80&w=900" }
+                ],
+                selectedColorIndex: 0,
+                selectedSize: "ÚNICO"
+            }
+        ];
+
+        // 2. SHOPPING CART STATE
+        let cart = [];
+
+        // RENDER PRODUCTS GRID WITHOUT FULL RE-RENDER TO PRESERVE CLICKS
+        function renderProducts(items) {
+            const container = document.getElementById("product-grid");
+            container.innerHTML = "";
+
+            items.forEach((item) => {
+                const currentColor = item.colors[item.selectedColorIndex];
+
+                const card = document.createElement("div");
+                card.className = "glass-card rounded-3xl p-5 flex flex-col justify-between group product-item";
+                card.id = `product-card-${item.id}`;
+
+                card.innerHTML = `
+                    <div>
+                        <!-- Product Image Box -->
+                        <div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-neutral-950 mb-5 cursor-pointer" onclick="openProductModal(${item.id})">
+                            <img 
+                                id="prod-img-${item.id}"
+                                src="${currentColor.image}" 
+                                alt="${item.name}" 
+                                class="w-full h-full object-cover transition-opacity duration-300 group-hover:scale-105"
+                            >
+                            
+                            <!-- Badges -->
+                            <div class="absolute top-3 left-3 glass-panel px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider text-neutral-300">
+                                ${item.tag}
+                            </div>
+
+                            <!-- Color Name Floating Tag -->
+                            <div class="absolute bottom-3 left-3 glass-panel px-3 py-1 rounded-full text-[10px] font-mono text-neutral-300">
+                                <span id="color-label-${item.id}">${currentColor.name}</span>
+                            </div>
+                        </div>
+
+                        <!-- Product Title & Price -->
+                        <div class="space-y-3">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <span class="text-[10px] font-mono text-neutral-500 uppercase tracking-widest block">${item.category}</span>
+                                    <h3 class="font-syne font-bold text-base uppercase text-white group-hover:text-neutral-300 transition-colors">${item.name}</h3>
+                                </div>
+                                <span class="font-mono text-base font-bold text-white">$${item.price}.00</span>
+                            </div>
+
+                            <p class="text-xs text-neutral-400 font-light line-clamp-2 leading-relaxed">${item.desc}</p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Options on Card: Colors & Sizes -->
+                    <div class="pt-5 border-t border-white/10 mt-5 space-y-4">
+                        
+                        <!-- Color Swatches (CLICKABLE & WORKING) -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-mono text-neutral-400">Color:</span>
+                            <div class="flex items-center gap-2" id="color-container-${item.id}">
+                                ${item.colors.map((c, idx) => `
+                                    <button 
+                                        type="button"
+                                        onclick="changeProductColor(${item.id}, ${idx})"
+                                        class="w-6 h-6 rounded-full border border-white/20 transition-all ${idx === item.selectedColorIndex ? 'swatch-active' : 'opacity-60 hover:opacity-100 hover:scale-110'}"
+                                        style="background-color: ${c.hex};"
+                                        title="${c.name}">
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Sizes Selector (CLICKABLE & WORKING) -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-mono text-neutral-400">Talle:</span>
+                            <div class="flex items-center gap-1.5 flex-wrap justify-end" id="size-container-${item.id}">
+                                ${item.sizes.map(size => `
+                                    <button 
+                                        type="button"
+                                        onclick="changeProductSize(${item.id}, '${size}')"
+                                        class="px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all ${item.selectedSize === size ? 'size-active' : 'bg-white/5 border border-white/10 text-neutral-400 hover:text-white hover:border-white/30'}">
+                                        ${size}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Add to Bag Button -->
+                        <button 
+                            type="button"
+                            onclick="addToCartDirect(${item.id})" 
+                            class="w-full glass-button py-3 rounded-2xl font-mono text-xs uppercase tracking-wider font-semibold text-white flex items-center justify-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                            <span>Añadir — $${item.price}.00</span>
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            lucide.createIcons();
+            attachHoverEffects();
+        }
+
+        // Live Color Change directly on Card (NO FULL RE-RENDER, DIRECT DOM UPDATE)
+        function changeProductColor(productId, colorIndex) {
+            playAudioFX(520, 0.04);
+            const item = products.find(p => p.id === productId);
+            if (!item) return;
+
+            item.selectedColorIndex = colorIndex;
+            const newColor = item.colors[colorIndex];
+
+            // Update Image
+            const img = document.getElementById(`prod-img-${productId}`);
+            const label = document.getElementById(`color-label-${productId}`);
+
+            if (img && label) {
+                img.style.opacity = '0.3';
+                setTimeout(() => {
+                    img.src = newColor.image;
+                    label.innerText = newColor.name;
+                    img.style.opacity = '1';
+                }, 120);
+            }
+
+            // Update color swatch UI directly
+            const container = document.getElementById(`color-container-${productId}`);
+            if (container) {
+                container.querySelectorAll('button').forEach((btn, idx) => {
+                    if (idx === colorIndex) {
+                        btn.className = 'w-6 h-6 rounded-full border border-white/20 transition-all swatch-active';
+                    } else {
+                        btn.className = 'w-6 h-6 rounded-full border border-white/20 transition-all opacity-60 hover:opacity-100 hover:scale-110';
+                    }
+                });
+            }
+
+            showToast(`Color: ${newColor.name}`);
+        }
+
+        // Live Size Selection directly on Card (NO FULL RE-RENDER)
+        function changeProductSize(productId, size) {
+            playAudioFX(600, 0.03);
+            const item = products.find(p => p.id === productId);
+            if (!item) return;
+
+            item.selectedSize = size;
+
+            // Update size buttons UI directly
+            const container = document.getElementById(`size-container-${productId}`);
+            if (container) {
+                container.querySelectorAll('button').forEach(btn => {
+                    if (btn.innerText.trim() === size) {
+                        btn.className = 'px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all size-active';
+                    } else {
+                        btn.className = 'px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all bg-white/5 border border-white/10 text-neutral-400 hover:text-white hover:border-white/30';
+                    }
+                });
+            }
+
+            showToast(`Talle: ${size}`);
+        }
+
+        // Direct Add to Cart with selected specs
+        function addToCartDirect(productId) {
+            const item = products.find(p => p.id === productId);
+            if (!item) return;
+
+            const selectedColor = item.colors[item.selectedColorIndex];
+            const cartItemId = `${item.id}-${selectedColor.name}-${item.selectedSize}`;
+
+            const existing = cart.find(i => i.cartItemId === cartItemId);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({
+                    cartItemId: cartItemId,
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    image: selectedColor.image,
+                    colorName: selectedColor.name,
+                    colorHex: selectedColor.hex,
+                    size: item.selectedSize,
+                    quantity: 1
+                });
+            }
+
+            playAudioFX(700, 0.06);
+            updateCartUI();
+            openCart();
+            showToast(`"${item.name}" (${selectedColor.name} / ${item.selectedSize}) añadido`);
+        }
+
+        // Interactive Category Filter
+        function filterCategory(cat) {
+            document.querySelectorAll(".cat-pill").forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.classList.add("border-white/30", "text-white");
+                    btn.classList.remove("border-white/5", "text-neutral-400");
+                } else {
+                    btn.classList.remove("border-white/30", "text-white");
+                    btn.classList.add("border-white/5", "text-neutral-400");
+                }
+            });
+
+            const filtered = cat === "all" ? products : products.filter(p => p.category === cat);
+            renderProducts(filtered);
+
+            gsap.from(".product-item", {
+                opacity: 0,
+                y: 15,
+                stagger: 0.05,
+                duration: 0.4,
+                ease: "power2.out"
+            });
+        }
+
+        // Cart Actions & Quantity Management
+        function changeQuantity(cartItemId, delta) {
+            const item = cart.find(i => i.cartItemId === cartItemId);
+            if (!item) return;
+
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                cart = cart.filter(i => i.cartItemId !== cartItemId);
+            }
+            updateCartUI();
+        }
+
+        function removeCartItem(cartItemId) {
+            playAudioFX(400, 0.04);
+            cart = cart.filter(i => i.cartItemId !== cartItemId);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((acc, curr) => acc + curr.quantity, 0);
+            document.getElementById("cart-badge").innerText = count;
+
+            const cartContainer = document.getElementById("cart-items");
+            cartContainer.innerHTML = "";
+
+            if (cart.length === 0) {
+                cartContainer.innerHTML = `
+                    <div class="py-16 text-center text-neutral-500 font-mono text-xs space-y-3">
+                        <i data-lucide="shopping-bag" class="w-8 h-8 mx-auto opacity-30"></i>
+                        <p>TU BOLSA ESTÁ VACÍA</p>
+                        <button onclick="closeCart()" class="text-white underline underline-offset-4 mt-2">Continuar Explorando</button>
+                    </div>
+                `;
+                document.getElementById("cart-subtotal").innerText = "$0.00";
+                document.getElementById("cart-total").innerText = "$0.00";
+                lucide.createIcons();
+                return;
+            }
+
+            let subtotal = 0;
+            cart.forEach(item => {
+                subtotal += item.price * item.quantity;
+                const row = document.createElement("div");
+                row.className = "flex items-center gap-4 glass-card p-3.5 rounded-2xl";
+                row.innerHTML = `
+                    <img src="${item.image}" class="w-16 h-20 object-cover rounded-xl" alt="${item.name}">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-syne font-bold text-xs uppercase text-white truncate">${item.name}</h4>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span class="w-2.5 h-2.5 rounded-full border border-white/20" style="background-color: ${item.colorHex};"></span>
+                            <span class="text-[10px] font-mono text-neutral-400">${item.colorName}</span>
+                            <span class="text-[10px] font-mono text-neutral-300 font-bold bg-white/10 px-1.5 py-0.5 rounded">Talle: ${item.size}</span>
+                        </div>
+                        <span class="font-mono text-xs font-semibold text-white mt-1.5 block">$${item.price * item.quantity}.00</span>
+                    </div>
+
+                    <!-- Quantity controls -->
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center glass-panel rounded-lg border border-white/10">
+                            <button onclick="changeQuantity('${item.cartItemId}', -1)" class="px-2 py-1 text-xs text-neutral-400 hover:text-white">-</button>
+                            <span class="px-1 text-xs font-mono font-bold text-white">${item.quantity}</span>
+                            <button onclick="changeQuantity('${item.cartItemId}', 1)" class="px-2 py-1 text-xs text-neutral-400 hover:text-white">+</button>
+                        </div>
+                        <button onclick="removeCartItem('${item.cartItemId}')" class="p-1.5 text-neutral-500 hover:text-white transition-colors" title="Eliminar">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                `;
+                cartContainer.appendChild(row);
+            });
+
+            document.getElementById("cart-subtotal").innerText = `$${subtotal}.00`;
+            document.getElementById("cart-total").innerText = `$${subtotal}.00`;
+            lucide.createIcons();
+        }
+
+        function openCart() {
+            const drawer = document.getElementById("cart-drawer");
+            const backdrop = document.getElementById("cart-backdrop");
+            const content = document.getElementById("cart-content");
+
+            drawer.classList.remove("pointer-events-none");
+            backdrop.classList.remove("pointer-events-none", "opacity-0");
+            backdrop.classList.add("opacity-100");
+            content.classList.remove("translate-x-full");
+            content.classList.add("translate-x-0");
+        }
+
+        function closeCart() {
+            const drawer = document.getElementById("cart-drawer");
+            const backdrop = document.getElementById("cart-backdrop");
+            const content = document.getElementById("cart-content");
+
+            backdrop.classList.add("opacity-0", "pointer-events-none");
+            content.classList.add("translate-x-full");
+            setTimeout(() => {
+                drawer.classList.add("pointer-events-none");
+            }, 500);
+        }
+
+        // ================= PRODUCT MODAL / DETAILED CUSTOMIZER =================
+        let modalActiveProductId = null;
+        let modalActiveColorIndex = 0;
+        let modalActiveSize = "M";
+
+        function openProductModal(productId) {
+            playAudioFX(550, 0.04);
+            const item = products.find(p => p.id === productId);
+            if (!item) return;
+
+            modalActiveProductId = productId;
+            modalActiveColorIndex = item.selectedColorIndex;
+            modalActiveSize = item.selectedSize;
+
+            renderModalContent(item);
+
+            const modal = document.getElementById("product-modal");
+            const card = document.getElementById("product-modal-card");
+
+            modal.classList.remove("pointer-events-none", "opacity-0");
+            modal.classList.add("opacity-100");
+            card.classList.remove("scale-95");
+            card.classList.add("scale-100");
+            lucide.createIcons();
+            attachHoverEffects();
+        }
+
+        function renderModalContent(item) {
+            const currentColor = item.colors[modalActiveColorIndex];
+            const body = document.getElementById("modal-content-body");
+
+            body.innerHTML = `
+                <!-- Modal Left: Live Image Display -->
+                <div class="space-y-3">
+                    <div class="aspect-[4/5] rounded-2xl overflow-hidden bg-neutral-950 relative border border-white/10">
+                        <img 
+                            id="modal-active-img"
+                            src="${currentColor.image}" 
+                            alt="${item.name}" 
+                            class="w-full h-full object-cover transition-opacity duration-300"
+                        >
+                        <div class="absolute bottom-4 left-4 glass-panel px-3 py-1.5 rounded-full text-xs font-mono text-white">
+                            Color: <span class="font-bold">${currentColor.name}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Right: Configuration Controls -->
+                <div class="space-y-6">
+                    <div>
+                        <span class="text-xs font-mono text-neutral-400 uppercase tracking-widest block">${item.tag} // ${item.category}</span>
+                        <h2 class="font-syne text-2xl sm:text-3xl font-black uppercase text-white mt-1">${item.name}</h2>
+                        <span class="font-mono text-2xl font-bold text-white block mt-2">$${item.price}.00</span>
+                    </div>
+
+                    <p class="text-neutral-400 text-sm font-light leading-relaxed">${item.desc}</p>
+
+                    <!-- Color Picker Inside Modal -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-mono">
+                            <span class="text-neutral-300 uppercase">1. Seleccionar Color:</span>
+                            <span class="text-white font-bold">${currentColor.name}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            ${item.colors.map((c, idx) => `
+                                <button 
+                                    type="button"
+                                    onclick="setModalColor(${idx})"
+                                    class="w-9 h-9 rounded-full border border-white/20 transition-all flex items-center justify-center ${idx === modalActiveColorIndex ? 'swatch-active' : 'opacity-60 hover:opacity-100 hover:scale-110'}"
+                                    style="background-color: ${c.hex};"
+                                    title="${c.name}">
+                                    ${idx === modalActiveColorIndex ? '<i data-lucide="check" class="w-4 h-4 text-white"></i>' : ''}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Size Picker Inside Modal -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-mono">
+                            <span class="text-neutral-300 uppercase">2. Seleccionar Talle:</span>
+                            <button type="button" onclick="openSizeGuide()" class="text-neutral-400 hover:text-white underline text-[11px] flex items-center gap-1">
+                                <i data-lucide="ruler" class="w-3.5 h-3.5"></i> Ver Guía de Talles
+                            </button>
+                        </div>
+                        <div class="flex gap-2 flex-wrap">
+                            ${item.sizes.map(s => `
+                                <button 
+                                    type="button"
+                                    onclick="setModalSize('${s}')"
+                                    class="px-5 py-2.5 rounded-xl text-xs font-mono font-medium transition-all ${s === modalActiveSize ? 'size-active' : 'border border-white/10 text-neutral-400 hover:border-white/30 hover:text-white'}">
+                                    ${s}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Add Button -->
+                    <div class="pt-4 space-y-3">
+                        <button 
+                            type="button"
+                            onclick="confirmModalAddToCart()"
+                            class="w-full glass-button py-4 rounded-full font-mono text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            <span>Añadir a la Bolsa ($${item.price}.00)</span>
+                        </button>
+                        
+                        <div class="flex items-center justify-between text-[11px] font-mono text-neutral-500 pt-2 border-t border-white/10">
+                            <span class="flex items-center gap-1"><i data-lucide="truck" class="w-3.5 h-3.5"></i> Envío Gratis a Domicilio</span>
+                            <span class="flex items-center gap-1"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Cambio Gratuito</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+            attachHoverEffects();
+        }
+
+        function setModalColor(idx) {
+            playAudioFX(500, 0.03);
+            modalActiveColorIndex = idx;
+            const item = products.find(p => p.id === modalActiveProductId);
+            renderModalContent(item);
+        }
+
+        function setModalSize(size) {
+            playAudioFX(600, 0.03);
+            modalActiveSize = size;
+            const item = products.find(p => p.id === modalActiveProductId);
+            renderModalContent(item);
+        }
+
+        function confirmModalAddToCart() {
+            const item = products.find(p => p.id === modalActiveProductId);
+            if (!item) return;
+
+            item.selectedColorIndex = modalActiveColorIndex;
+            item.selectedSize = modalActiveSize;
+
+            // Also synchronize with product grid
+            const img = document.getElementById(`prod-img-${item.id}`);
+            const label = document.getElementById(`color-label-${item.id}`);
+            if (img && label) {
+                img.src = item.colors[modalActiveColorIndex].image;
+                label.innerText = item.colors[modalActiveColorIndex].name;
+            }
+
+            addToCartDirect(item.id);
+            closeProductModal();
+        }
+
+        function closeProductModal() {
+            const modal = document.getElementById("product-modal");
+            const card = document.getElementById("product-modal-card");
+            modal.classList.add("opacity-0", "pointer-events-none");
+            card.classList.add("scale-95");
+        }
+
+        // ================= SIZE GUIDE MODAL (OPEN & CLOSE) =================
+        function openSizeGuide() {
+            playAudioFX(520, 0.03);
+            const modal = document.getElementById("sizeguide-modal");
+            modal.classList.remove("pointer-events-none", "opacity-0");
+            modal.classList.add("opacity-100");
+        }
+
+        function closeSizeGuide() {
+            playAudioFX(480, 0.03);
+            const modal = document.getElementById("sizeguide-modal");
+            modal.classList.add("opacity-0", "pointer-events-none");
+        }
+
+        // Hero Color Swapper
+        function swapHeroColor(colorIdx) {
+            playAudioFX(550, 0.04);
+            const item = products[0];
+            const color = item.colors[colorIdx];
+            const heroImg = document.getElementById("hero-img-display");
+            const colorName = document.getElementById("hero-color-name");
+
+            if (heroImg && colorName) {
+                heroImg.style.opacity = '0.3';
+                setTimeout(() => {
+                    heroImg.src = color.image;
+                    colorName.innerText = color.name;
+                    heroImg.style.opacity = '1';
+                }, 120);
+            }
+
+            // Update swatch style in hero
+            const container = document.getElementById("hero-color-swatches");
+            if (container) {
+                container.querySelectorAll("button").forEach((btn, idx) => {
+                    if (idx === colorIdx) {
+                        btn.className = "w-6 h-6 rounded-full border border-white/20 swatch-active transition-all";
+                    } else {
+                        btn.className = "w-6 h-6 rounded-full border border-white/20 opacity-60 hover:opacity-100 hover:scale-110 transition-all";
+                    }
+                });
+            }
+
+            showToast(`Color Hero: ${color.name}`);
+        }
+
+        // Checkout Trigger
+        function triggerCheckout() {
+            if (cart.length === 0) {
+                showToast("Tu bolsa está vacía actualmente");
+                return;
+            }
+
+            closeCart();
+            confetti({
+                particleCount: 120,
+                spread: 75,
+                origin: { y: 0.6 },
+                colors: ['#ffffff', '#888888', '#222222']
+            });
+            showToast("Demo Lista: Redirigiendo a pasarela de pagos segura...");
+        }
+
+        // Newsletter form
+        function handleNewsletter(e) {
+            e.preventDefault();
+            playAudioFX(750, 0.08);
+            const msg = document.getElementById("newsletter-msg");
+            msg.classList.remove("opacity-0");
+            setTimeout(() => {
+                msg.classList.add("opacity-0");
+            }, 5000);
+            e.target.reset();
+        }
+
+        // Toast feedback
+        function showToast(text) {
+            const toast = document.getElementById("toast");
+            document.getElementById("toast-text").innerText = text;
+            toast.classList.remove("translate-y-24", "opacity-0");
+            toast.classList.add("translate-y-0", "opacity-100");
+
+            setTimeout(() => {
+                toast.classList.add("translate-y-24", "opacity-0");
+                toast.classList.remove("translate-y-0", "opacity-100");
+            }, 3000);
+        }
+
+        // Web Audio Synthesizer
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function playAudioFX(freq = 520, duration = 0.04) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById("sound-btn");
+            if (soundEnabled) {
+                btn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4"></i>`;
+                showToast("Efectos sonoros activados");
+            } else {
+                btn.innerHTML = `<i data-lucide="volume-x" class="w-4 h-4 text-neutral-500"></i>`;
+                showToast("Efectos sonoros silenciados");
+            }
+            lucide.createIcons();
+        }
+
+        // Smooth Scrolling with Lenis
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothWheel: true,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // Custom Cursor Movement
+        const cursorDot = document.getElementById('cursor-dot');
+        const cursorRing = document.getElementById('cursor-ring');
+
+        window.addEventListener('mousemove', (e) => {
+            cursorDot.style.left = `${e.clientX}px`;
+            cursorDot.style.top = `${e.clientY}px`;
+            
+            cursorRing.style.left = `${e.clientX}px`;
+            cursorRing.style.top = `${e.clientY}px`;
+        });
+
+        function attachHoverEffects() {
+            document.querySelectorAll('a, button, input, .product-item').forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+            });
+        }
+
+        // Entrance GSAP Animation
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.from("#hero-text-block > *", {
+            y: 35,
+            opacity: 0,
+            duration: 1.1,
+            stagger: 0.12,
+            ease: "power3.out"
+        });
+
+        // Initialize Products
+        renderProducts(products);
+    </script>
+</body>
+</html>
